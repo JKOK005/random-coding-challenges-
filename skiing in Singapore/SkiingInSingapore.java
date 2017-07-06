@@ -11,8 +11,26 @@ class SkiingInSingapore{
         System.out.println(Arrays.deepToString(arr));
     };
 
-    private static Pair<int,int> getStartingLocation(int[][] cost_map){
+    private static PairClass getStartingLocation(int[][] map, int[][] cost_map){
+        int max_cost    = -1;
+        int map_val     = -1;
+        PairClass pair  = new PairClass(0,0);
 
+        int max_row = map.length;
+        int max_col = map[0].length;
+
+        for(int i=0; i<max_row; i++){
+            for(int j=0; j<max_col; j++){
+                if(cost_map[i][j] >= max_cost){
+                    if(map[i][j] > map_val){
+                        pair.set(i,j);          // Note that i, j are in index values starting at 0
+                        map_val     = map[i][j];
+                    }
+                    max_cost = cost_map[i][j];
+                }
+            }
+        }
+        return pair;
     }
 
     // Can refractor: too many arguments
@@ -60,10 +78,8 @@ class SkiingInSingapore{
                 }
             }
         }
-
-
-        printArr(cost_map);
-        printArr(has_explored);
+        PairClass pair = getStartingLocation(map, cost_map);
+        System.out.println(String.format("Left: %d, Right: %d", pair.getLeft(), pair.getRight()));
     }
 
     public static void main(String[] args){
