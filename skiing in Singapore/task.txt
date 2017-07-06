@@ -1,0 +1,41 @@
+You may read the task description over here: 
+http://geeks.redmart.com/2015/01/07/skiing-in-singapore-a-coding-diversion/
+
+As a short description, you are given a M x N map of integers. You may pick any point on the map to start 
+and you can only move if to a new point only if it has a value less than your current value. Your movements 
+are also limited to left / right / up / down. 
+
+The goal is to find a starting point that will lead to you a local minima while taking the longest route possible. 
+
+*I'm assuming that we should end up only at a local minima since the problem did not mention that we have to end up 
+at a global minima.
+
+Solution:
+Two solutions came to my mind. 
+
+1) The first is to brute force your way by performing depth / breath first search over the entire 
+map, assuming that you start at each i,j location. That should give you the longest path possible but will take a long amount of time.
+Also, brute forcing is probably a bad idea for most questions on the net :/
+
+2) The second solution combines depth first search with dynamic programmming. We maintain 3 2D-arrays, one to store the actual map itself,
+one to store the cost of a certain point on the map and one to keep track if that location has been explored. 
+
+Assume that we start at an arbitraty location i,j. We first attempt to explore all of our 4 directions starting from top / right / bottom / left.
+We check to see if that location has already been explored. If it hasn't, we recursively explore depth first until we hit a local minima to which there are no
+other means of exploring further. We then return up the chain, this time exploring other directions. Each time we recurse, our cost in that direction is incremented
+by 1. At the very end, we take the max of all possible directions we can move in and pass that score up the chain.
+
+Dynamic programming is applied when we register that we have explored a certain location. Since our recursive technique above returns the highest costing path for 
+that location (which means the longest possible path value), we can simply return that value from our cost array, increment it by 1 and store that as the cost value 
+for our current position. 
+
+We traverse through each possible location on the map and apply the logic above. At the end, we will have a 2D cost array of integers that represents the longest
+possible path you can take should you start at any i,j location. We then find the maxinum value over the entire array and pick the integer which is the highest.
+
+To find the longest route, we note that each time we move across that route, the cost will decrease by 1. This is because we incremented an adjacent location by
+a value of 1 during our recursion process. We begin at our starting location and search for a cost value that is 1 less than its current value. We move down until 
+we cannot find another suitable direction. From here, the algortihm ends.
+
+*Note that we do not need to worry about being trapped in a circular loop during recursion since our criteria for exploring a new adjacent location is based strictly
+on the fact that that location must be smaller in value than our current location. That means that if you are allowed to move down 1 square, you should not be allowed
+to move up to or find yourself reaching that same square again. 
