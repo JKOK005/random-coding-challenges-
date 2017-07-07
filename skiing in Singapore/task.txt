@@ -30,12 +30,15 @@ that location (which means the longest possible path value), we can simply retur
 for our current position. 
 
 We traverse through each possible location on the map and apply the logic above. At the end, we will have a 2D cost array of integers that represents the longest
-possible path you can take should you start at any i,j location. We then find the maxinum value over the entire array and pick the integer which is the highest.
+possible path you can take should you start at any i,j location. We then find the maxinum value over the entire array.
 
-To find the longest route, we note that each time we move across that route, the cost will decrease by 1. This is because we incremented an adjacent location by
-a value of 1 during our recursion process. We begin at our starting location and search for a cost value that is 1 less than its current value. We move down until 
-we cannot find another suitable direction. From here, the algortihm ends.
+There can be multiple global maximas across the cost array. To find the longest drop, we have to consider each maximas. We scan the cost array once more to pick
+up the coordinates of the maximas. We then trace back on the path using the rule that that each time we move across a feasible route, the cost must decrease by 1 and nothing more / less. 
+This is because we incremented an adjacent location by a value of 1 during our recursion process. We execute this trace back recursively and check all 4 directions. 
+Doing so allows us to consider multiple routes that may overlap. If we hit a dead-end (a local minima), we return that value. Finally, we compare all returned local minimas,
+pick the smallest and compute the drop at that particular starting point. Repeat this process for all global maximas as we will get our largest drop. 
 
 *Note that we do not need to worry about being trapped in a circular loop during recursion since our criteria for exploring a new adjacent location is based strictly
 on the fact that that location must be smaller in value than our current location. That means that if you are allowed to move down 1 square, you should not be allowed
 to move up to or find yourself reaching that same square again. 
+

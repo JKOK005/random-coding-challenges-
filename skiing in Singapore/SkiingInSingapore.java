@@ -11,60 +11,42 @@ class SkiingInSingapore{
         System.out.println(Arrays.deepToString(arr));
     };
 
-    private static PairClass getStartingLocation(int[][] map, int[][] cost_map){
-        int max_cost    = -1;
-        int map_val     = -1;
-        PairClass pair  = new PairClass(0,0);
-
-        int max_row = map.length;
-        int max_col = map[0].length;
-
-        for(int i=0; i<max_row; i++){
-            for(int j=0; j<max_col; j++){
-                if(cost_map[i][j] >= max_cost){
-                    if(map[i][j] > map_val){
-                        pair.set(i,j);          // Note that i, j are in index values starting at 0
-                        map_val     = map[i][j];
-                    }
-                    max_cost = cost_map[i][j];
-                }
-            }
-        }
-        return pair;
-    }
-
-    private static void traceBack(int[][] map, int[][] cost_map, PairClass start){
+    private static int traceBack(int[][] map, int[][] cost_map, PairClass start){
         int X           = start.getLeft();
         int Y           = start.getRight();
         int max_row     = map.length;
         int max_col     = map[0].length;
+        int tb_n, tb_e, tb_s, tb_w;
+        tb_n = tb_e = tb_s = tb_w = 9999;       // Choose a number that is greater than 1500
 
         PairClass next  = new PairClass(-1,-1);
-
-        System.out.println(String.format("Path: %d", map[X][Y]));
-        // Scan north
-        if(X -1>=0 && cost_map[X][Y] == cost_map[X -1][Y] +1){
-            next.set(X -1, Y);
-            traceBack(map, cost_map, next);
+        if(cost_map[X][Y] == 0){
+            return map[X][Y];   // Return value of the end point 
+        }else{
+            // Scan north
+            if(X -1>=0 && cost_map[X][Y] == cost_map[X -1][Y] +1){
+                next.set(X -1, Y);
+                tb_n = traceBack(map, cost_map, next);
+            }
+            // Scan east
+            if(Y +1<max_col && cost_map[X][Y] == cost_map[X][Y +1] +1){
+                next.set(X, Y +1);
+                tb_e = traceBack(map, cost_map, next);
+            }
+            // Scan south
+            if(X +1<max_row && cost_map[X][Y] == cost_map[X +1][Y] +1){
+                next.set(X +1, Y);
+                tb_s = traceBack(map, cost_map, next);
+            }
+            // Scan west
+            if(Y -1>=0 && cost_map[X][Y] == cost_map[X][Y -1] +1){
+                next.set(X, Y -1);
+                tb_w = traceBack(map, cost_map, next);
+            }
+            return Math.min(tb_n, Math.min(tb_e, Math.min(tb_s, tb_w)));
         }
-        // Scan east
-        else if(Y +1<max_col && cost_map[X][Y] == cost_map[X][Y +1] +1){
-            next.set(X, Y +1);
-            traceBack(map, cost_map, next);
-        }
-        // Scan south
-        else if(X +1<max_row && cost_map[X][Y] == cost_map[X +1][Y] +1){
-            next.set(X +1, Y);
-            traceBack(map, cost_map, next);
-        }
-        // Scan west
-        else if(Y -1>=0 && cost_map[X][Y] == cost_map[X][Y -1] +1){
-            next.set(X, Y -1);
-            traceBack(map, cost_map, next);
-        }
-        // Return
-        return;
     }
+
     // Can refractor: too many arguments
     private static int explore(int X, int Y, int[][] map, int[][] cost_map, boolean[][] has_explored){
         if(has_explored[X][Y]) return cost_map[X][Y];
@@ -95,9 +77,34 @@ class SkiingInSingapore{
         return cost_map[X][Y];
     }
 
+    private static int getLargestDrop(int[][] map, int[][] cost_map, int max_cost){
+        int lowest_pt, drop;
+        int max_drop        = 0;
+        int rows            = map.length;
+        int cols            = map[0].length;
+        PairClass start     = new PairClass(-1,-1);
+        for(int i=0; i<rows; i++){
+            for(int j=0; j<cols; j++){
+                if(cost_map[i][j] == max_cost){
+                    start.set(i,j);
+                    lowest_pt   = traceBack(map, cost_map, start);
+                    drop        = map[i][j] - lowest_pt;
+                    if(drop > max_drop){
+                        max_drop = drop;
+                    }
+                }
+
+            }
+
+        }
+        return max_drop;
+    }
+
     public static void getLongestPath(int[][] map){
         int rows    = map.length;
         int cols    = map[0].length;
+        int longst_path     = 0;
+        int val;
 
         // Construct has_explored and cost map
         boolean[][] has_explored    = new boolean[rows][cols];
@@ -106,13 +113,16 @@ class SkiingInSingapore{
         for(int i=0; i<rows; i++){
             for(int j=0; j<cols; j++){
                 if(!has_explored[i][j]){
-                    explore(i, j, map, cost_map, has_explored);
+                    val = explore(i, j, map, cost_map, has_explored);
+                    if(val > longst_path){
+                        longst_path = val;
+                    }
                 }
             }
         }
-        PairClass start = getStartingLocation(map, cost_map);
-        traceBack(map, cost_map, start);    // Prints path
-        System.out.println(String.format("Longest path: %d", cost_map[start.getLeft()][start.getRight()] +1));
+        System.out.println(String.format("Longest path: %d", longst_path +1));
+        int largest_drop    = getLargestDrop(map, cost_map, longst_path);
+        System.out.println(String.format("Largest drop: %d", largest_drop));
     }
 
     public static void main(String[] args){
