@@ -42,3 +42,6 @@ pick the smallest and compute the drop at that particular starting point. Repeat
 on the fact that that location must be smaller in value than our current location. That means that if you are allowed to move down 1 square, you should not be allowed
 to move up to or find yourself reaching that same square again. 
 
+Complexity:
+Time: O(n^2) 	- We have to scan the array twice, each scan taking O(n^2) time
+Space: O(n^2) 	- We have 3 2D-arrays to store values, each with space complexity O(n^2)
