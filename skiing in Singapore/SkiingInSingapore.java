@@ -33,6 +33,38 @@ class SkiingInSingapore{
         return pair;
     }
 
+    private static void traceBack(int[][] map, int[][] cost_map, PairClass start){
+        int X           = start.getLeft();
+        int Y           = start.getRight();
+        int max_row     = map.length;
+        int max_col     = map[0].length;
+
+        PairClass next  = new PairClass(-1,-1);
+
+        System.out.println(String.format("Path: %d", map[X][Y]));
+        // Scan north
+        if(X -1>=0 && cost_map[X][Y] == cost_map[X -1][Y] +1){
+            next.set(X -1, Y);
+            traceBack(map, cost_map, next);
+        }
+        // Scan east
+        else if(Y +1<max_col && cost_map[X][Y] == cost_map[X][Y +1] +1){
+            next.set(X, Y +1);
+            traceBack(map, cost_map, next);
+        }
+        // Scan south
+        else if(X +1<max_row && cost_map[X][Y] == cost_map[X +1][Y] +1){
+            next.set(X +1, Y);
+            traceBack(map, cost_map, next);
+        }
+        // Scan west
+        else if(Y -1>=0 && cost_map[X][Y] == cost_map[X][Y -1] +1){
+            next.set(X, Y -1);
+            traceBack(map, cost_map, next);
+        }
+        // Return
+        return;
+    }
     // Can refractor: too many arguments
     private static int explore(int X, int Y, int[][] map, int[][] cost_map, boolean[][] has_explored){
         if(has_explored[X][Y]) return cost_map[X][Y];
@@ -78,8 +110,9 @@ class SkiingInSingapore{
                 }
             }
         }
-        PairClass pair = getStartingLocation(map, cost_map);
-        System.out.println(String.format("Left: %d, Right: %d", pair.getLeft(), pair.getRight()));
+        PairClass start = getStartingLocation(map, cost_map);
+        traceBack(map, cost_map, start);    // Prints path
+        System.out.println(String.format("Longest path: %d", cost_map[start.getLeft()][start.getRight()] +1));
     }
 
     public static void main(String[] args){
