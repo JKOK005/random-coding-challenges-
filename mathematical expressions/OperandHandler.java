@@ -1,10 +1,8 @@
 import java.util.*;
 
-class OperandHandler implements Checker{
-	private HashMap<Character, Integer> hm 	= new HashMap<Character, Integer>();
-	private Stack stk<Character> = new Stack<Character>();
-
-	private void populatePriorities(){
+public class OperandHandler extends Checker{
+	@Override
+	protected void populatePriorities(){
 		hm.put('(', 3);
 		hm.put(')', 3);
 		hm.put('*', 2);
@@ -17,22 +15,12 @@ class OperandHandler implements Checker{
 		populatePriorities();
 	}
 
-	@Override
-	public int getPriority(char c){
-		if(isOperand(c)){
-			return hm.get(c);
-		}else{
-			return -1;
-		}
+	public boolean checkLeftBrac(char c){
+		return c == '(';
 	}
 
-	@Override
-	public boolean isOperand(char c){
-		return hm.containsKey(c);
-	}
-
-	@Override
-	public void insert(char c){
+	public boolean checkRightBrac(char c){
+		return c == ')';
 	}
 
 	public static void main(String[] args){
