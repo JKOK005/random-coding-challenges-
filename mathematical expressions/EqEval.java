@@ -6,7 +6,7 @@ public class EqEval{
 	private OperandHandler oper 	= new OperandHandler();
 	private VariableHandler varh 	= new VariableHandler();
 
-	public String formatString (String str){
+	private String formatString (String str){
 		StringBuilder new_str =  new StringBuilder();
 
 		for(int i=0; i < str.length(); i++){
@@ -21,19 +21,19 @@ public class EqEval{
 		return new_str.toString();
 	}
 
-	public boolean assertValidString(String line) throws Exception{
+	private boolean assertValidString(String line) throws Exception{
 		Stack<Character> stk = new Stack<Character>();
 		int flag = -1;
 		char curr, tmp;
 
-		String[] str_arr 	 = line.trim().split("\\s+"); 	// Split by white space
+		String[] str_arr = line.trim().split("\\s+"); 	// Split by white space
 
 		for(String itr : str_arr){
 			curr 		= itr.charAt(0);
 
 			if(varh.isInt(itr)){
 				if(flag == 1){
-					throw new Exception("2 adjacent ints detected");
+					throw new Exception("Syntax error (int)");
 				}
 				flag = 1;
 			}
@@ -42,10 +42,10 @@ public class EqEval{
 					stk.push(curr);
 
 				}else if(flag == 0){
-					throw new Exception("2 adjacent operands detected");
+					throw new Exception("Syntax error (oper)");
 
 				}else if(oper.checkRightBrac(curr)){
-					if(stk.empty()) throw new Exception("Failure for bracket closure");
+					if(stk.empty()) throw new Exception("No bracket closure");
 					stk.pop();
 					flag = 1;
 
@@ -55,44 +55,75 @@ public class EqEval{
 				}
 			}
 			else{
-				throw new Exception("Invalid input detected");
+				throw new Exception("Unrecognized input error");
 			}
 		}
 		return true;
 	}
 
-	public int parseExpr(String line){
-		String[] str_arr 	= line.trim().split("\\s+"); 	// Split by white space
-		char op_curr, op_tmp;
-		int var_A, var_B;
+	private void stackCalc(){
+		int result;
+		int val_B 	= varh.popStack();
+		int val_A 	= varh.popStack();
+		char op 	= oper.popStack();
+
+		result 		= oper.getResult(val_A, val_B, op);
+		varh.pushStack(result);
+	}
+
+	private int parseExpr(String line) throws Exception{
+		char op_curr;
+		String[] str_arr = line.trim().split("\\s+"); 	// Split by white space
 
 		for(String itr : str_arr){
+			op_curr 	= itr.charAt(0);
+
 			if(varh.isInt(itr)){
 				varh.pushStack(itr); 	
-			}else if(oper.isOperand(itr.charAt(0))){
-				op_curr 	= itr.charAt(0);
-
+			}else if(oper.isOperand(op_curr)){
 				// Right bracket encountered
 				if(oper.checkRightBrac(op_curr)){
+					while(!oper.checkLeftBrac(oper.peekStack())){
+						stackCalc();
+					}
+					oper.popStack(); 		// Removes left bracket
 				}
-
-				oper.pushStack(itr.charAt(0));
+				else{
+					if(!oper.checkLeftBrac(op_curr) && oper.getPriority(op_curr) < oper.getPriority(oper.peekStack())){
+						stackCalc();
+					}
+					oper.pushStack(op_curr);
+				}
 			}
-			// System.out.println(itr);
 		}
-		return 1;
+
+		// Flush remaining contents in stack
+		while(!oper.isEmptyStack()){
+			stackCalc();
+		}
+		return varh.popStack();
+	}
+
+	public int evaluate(String line) throws Exception{
+		String formated_line 	= formatString(line);
+		assertValidString(formated_line);
+		return parseExpr(formated_line);
 	}
 
 	public static void main(String[] args){
+		int result;
 		Scanner sc 	= new Scanner(System.in);
-		String line	= sc.nextLine();
 		EqEval eq_eval = new EqEval();
-		try{
-			String formated_line = eq_eval.formatString(line);
-			eq_eval.assertValidString(formated_line);
-			eq_eval.parseExpr(formated_line);
-		}catch(Exception ex){
-			ex.printStackTrace(new PrintStream(System.out));
+
+		while(sc.hasNextLine()){
+			String line	= sc.nextLine();
+
+			try{
+				result 	= eq_eval.evaluate(line);
+				System.out.println(String.format("%s 		-> 		%d", line, result));
+			}catch(Exception ex){
+				ex.printStackTrace(new PrintStream(System.out));
+			}
 		}
 	}
 }

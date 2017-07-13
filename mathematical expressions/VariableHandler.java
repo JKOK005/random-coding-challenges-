@@ -20,11 +20,21 @@ public class VariableHandler{
 	public int popStack(){
 		if(!stk.empty()){
 			return stk.pop();
-		}return -1;
+		}return Integer.MIN_VALUE;
+	}
+
+	public int peekStack(){
+		if(!stk.empty()){
+			return stk.peek();
+		}return Integer.MIN_VALUE;
 	}
 
 	public void pushStack(int c){
 		stk.push(c);
+	}
+
+	public void printStk(){
+		System.out.println(Arrays.toString(stk.toArray()));
 	}
 
 	public void pushStack(String str){

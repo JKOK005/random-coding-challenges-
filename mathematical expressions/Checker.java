@@ -22,11 +22,22 @@ public abstract class Checker{
 		return stk.empty();
 	}
 
+	public char peekStack(){
+		if(!isEmptyStack()){
+			return stk.peek();
+		}
+		return '\u0000';
+	}
+
 	public char popStack(){
 		if(!isEmptyStack()){
 			return stk.pop();
 		}
-		return ' ';
+		return '\u0000';
+	}
+
+	public void printStk(){
+		System.out.println(Arrays.toString(stk.toArray()));
 	}
 
 	public void pushStack(char c){

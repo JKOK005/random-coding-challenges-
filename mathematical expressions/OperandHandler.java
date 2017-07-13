@@ -3,8 +3,8 @@ import java.util.*;
 public class OperandHandler extends Checker{
 	@Override
 	protected void populatePriorities(){
-		hm.put('(', 3);
-		hm.put(')', 3);
+		hm.put('(', 0);
+		hm.put(')', 0);
 		hm.put('*', 2);
 		hm.put('/', 2);
 		hm.put('+', 1);
@@ -21,6 +21,16 @@ public class OperandHandler extends Checker{
 
 	public boolean checkRightBrac(char c){
 		return c == ')';
+	}
+
+	public int getResult(int A, int B, char oper){
+		switch(oper){
+			case '*': return A * B;
+			case '/': return A / B;
+			case '+': return A + B;		
+			case '-': return A - B;
+			default : return -999;
+		}
 	}
 
 	public static void main(String[] args){
