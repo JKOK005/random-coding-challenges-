@@ -1,8 +1,15 @@
 import java.io.*;
+import java.util.*;
 
 public class Printer{
 	public static void printItem(Items item){
 		System.out.println(String.format("ID: %d, Price: %d, Vol: %d, Weight: %d", item.getId(), item.getPrice(), item.getVol(), item.getWeight()));
+	}
+
+	public static void printBasket(ArrayList<Items> basket){
+		for(int i =0; i < basket.size(); i++){
+			printItem(basket.get(i));
+		}
 	}
 
 	public static void printArr(int[][] arr){

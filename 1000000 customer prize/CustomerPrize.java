@@ -19,12 +19,30 @@ class CustomerPrize{
 				if(cur_item.getVol() < vol_limit){
 					pick 			= cur_item.getPrice() + price_mat[vol_limit - cur_item.getVol()][j -1];
 				}
-
 				// Do not pick that item
 				dont_pick 			= price_mat[vol_limit][j -1];
 				price_mat[i][j] 	= Math.max(pick, dont_pick);
 			}
 		}
+	}
+
+	private static ArrayList<Items> fillBasket(ArrayList<Items> item_container, int[][] price_mat){
+		ArrayList<Items> basket 	= new ArrayList<Items>();
+		int cur_vol 		= price_mat.length -1;
+		int cur_item_indx 	= price_mat[0].length -1;
+
+		while(cur_item_indx > 0 || price_mat[cur_vol][cur_item_indx] > 0){
+			int val_cur 	= price_mat[cur_vol][cur_item_indx];
+			int val_nxt 	= price_mat[cur_vol][cur_item_indx -1];
+
+			if(val_cur > val_nxt){
+				// Pick item
+				basket.add(item_container.get(cur_item_indx -1)); 		// Less 1 more for index referencing in item container list
+				cur_vol 	 -= item_container.get(cur_item_indx -1).getVol();
+			}
+			cur_item_indx--;
+		}
+		return basket;
 	}
 
 	public static void main(String[] args){
@@ -43,10 +61,13 @@ class CustomerPrize{
 				item_container.add(Adapter.strToItem(spec));
 			}
 		}
-
+		Collections.sort(item_container, new WeightComparator());
 		int[][] price_mat = new int[max_vol +1][item_container.size() +1];
 		populateMatrix(price_mat, item_container);
-		Printer.printArr(price_mat);
+		// Printer.printArr(price_mat);	
 
+		// Collect items 
+		ArrayList<Items> basket = fillBasket(item_container, price_mat);
+		Printer.printBasket(basket);
 	}
 }
