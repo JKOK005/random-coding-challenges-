@@ -51,7 +51,7 @@ class CustomerPrize{
 		String line;
 		String[] spec;
 		Items tmp;
-		final int max_vol 	= 40*35*30;
+		final int max_vol 	= 45*35*30;
 
 		while(sc.hasNextLine()){
 			line 		= sc.nextLine();
@@ -64,10 +64,20 @@ class CustomerPrize{
 		Collections.sort(item_container, new WeightComparator());
 		int[][] price_mat = new int[max_vol +1][item_container.size() +1];
 		populateMatrix(price_mat, item_container);
-		// Printer.printArr(price_mat);	
 
 		// Collect items 
 		ArrayList<Items> basket = fillBasket(item_container, price_mat);
 		Printer.printBasket(basket);
+
+		// Get results
+		int total_id 	= 0;
+		int total_price = 0;
+		int total_vol 	= 0;
+		for(Items item : basket){
+			total_id 	+= item.getId();
+			total_price += item.getPrice();
+			total_vol 	+= item.getVol();
+		}
+		System.out.println(String.format("Total ID: %d, Total price: %d, Total vol: %d", total_id, total_price, total_vol));
 	}
 }
