@@ -15,9 +15,9 @@ cat input.txt | java CustomerPrize
 
 Optionally, if the programme complains of the lack of heap space to run, add a flag
 '''
-cat input.txt | java -Xmg<RAM>g CustomerPrize
+cat input.txt | java -Xmg(RAM)g CustomerPrize
 '''
-replacing <RAM> with the amount of ram you wish to use. For my application, <RAM> = 5.
+replacing (RAM) with the amount of ram you wish to use. For my application, (RAM) = 5.
 
 
 ### Explaination of solution
@@ -59,8 +59,8 @@ We not have a basket of all items we need! We sum up their ID to get the result 
 
 
 ### Closing 
-This programme was pretty space consuming. The space complexity was ~O(M *N), a trade off to ensure that the time complexity is ~O(M *N) at most. 
-Given M = 45*35*30 and N = 20,000 (max), with each matrix entree being an integer, the lowest memory required is 3.78 Gb! I had to allocate 5Gb for
+This programme was pretty space consuming. The space complexity was ~O(M * N), a trade off to ensure that the time complexity is ~O(M * N) at most. 
+Given M = 45 * 35 * 30 and N = 20,000 (max), with each matrix entree being an integer, the lowest memory required is 3.78 Gb! I had to allocate 5Gb for
 this programme, which is quite a large amount to be used on Laptops. I often ran into lack of Heap memory errors thrown during runtime. 
 
 Hence, if anyone has a suggestion on how I can better improve the memory performace, please feel free to PM me of leave a comment in this Repo. 
