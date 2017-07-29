@@ -2,21 +2,19 @@ import java.util.*;
 import java.io.*;
 import java.lang.*;
 
-class TrieNode{
+public class TrieNode{
 	private HashMap<Character, TrieNode> child_map = new HashMap<Character, TrieNode>(); 
-	private boolean word_end 	= false; 
-
-	private void getAllChilds(){
-		for(char key : child_map.keySet()){
-			System.out.println(key);
-		}
-	}
+	private boolean word_end = false; 
 
 	private TrieNode getChild(char c){
 		if(child_map.containsKey(c)){
 			return child_map.get(c);
 		}
 		return null;
+	}
+
+	private void setWordEnd(boolean val){
+		word_end 	= val;
 	}
 
 	private TrieNode addChild(char c){
@@ -29,10 +27,9 @@ class TrieNode{
 	}
 
 	private void appendStr(String str, TrieNode node){
-		if(!str.isEmpty()){
-			if(str.length() == 1){
-				word_end 	= true;
-			}
+		if(str.isEmpty()){
+			node.setWordEnd(true);
+		}else{
 			char c 			= str.charAt(0);
 			TrieNode next 	= node.addChild(c);
 			appendStr(str.substring(1), next);
@@ -42,6 +39,7 @@ class TrieNode{
 
 	public void insertWord(String word, TrieNode root){
 		if(word.isEmpty()){
+			root.setWordEnd(true);
 			return;
 		}
 		char c 			= word.charAt(0);
@@ -54,12 +52,24 @@ class TrieNode{
 		return;
 	}
 
+	public HashMap<Character, TrieNode> getChildMap(){
+		return child_map;
+	}
+
+	public boolean isEnd(){
+		return word_end;
+	}
+
 	public static void main(String[] args){
 		Scanner sc 		= new Scanner(System.in);
-		String word 	= sc.nextLine();
 		TrieNode root 	= new TrieNode();
 		TrieNode proxy 	= new TrieNode();
-		proxy.insertWord(word, root);
-		root.getAllChilds();
+
+		while(sc.hasNext()){
+			String word = sc.nextLine();
+			proxy.insertWord(word, root);
+		}
+
+		TreePrinter.printTraverse(root);
 	}
 }

@@ -1,1 +1,9 @@
-hello
+ab
+aba
+abc
+abcca
+abd
+ajk
+akj
+zy
+yz
