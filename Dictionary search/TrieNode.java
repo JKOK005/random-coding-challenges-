@@ -2,7 +2,7 @@ import java.util.*;
 import java.io.*;
 import java.lang.*;
 
-public class TrieNode{
+public class TrieNode implements Serializable{
 	private HashMap<Character, TrieNode> child_map = new HashMap<Character, TrieNode>(); 
 	private boolean word_end = false; 
 
@@ -26,28 +26,28 @@ public class TrieNode{
 		return new_node;
 	}
 
-	private void appendStr(String str, TrieNode node){
+	private void appendStr(String str){
 		if(str.isEmpty()){
-			node.setWordEnd(true);
+			this.setWordEnd(true);
 		}else{
 			char c 			= str.charAt(0);
-			TrieNode next 	= node.addChild(c);
-			appendStr(str.substring(1), next);
+			TrieNode next 	= this.addChild(c);
+			next.appendStr(str.substring(1));
 		}
 		return;
 	}
 
-	public void insertWord(String word, TrieNode root){
+	public void insertWord(String word){
 		if(word.isEmpty()){
-			root.setWordEnd(true);
+			this.setWordEnd(true);
 			return;
 		}
 		char c 			= word.charAt(0);
-		TrieNode child 	= root.getChild(c);
+		TrieNode child 	= this.getChild(c);
 		if(child != null){
-			insertWord(word.substring(1), child); 		// Checks to see if a substring already exists from root
+			child.insertWord(word.substring(1)); 		// Checks to see if a substring already exists from root
 		}else{
-			appendStr(word, root); 						// If substring does not exist from root, start appending a new branch to it
+			this.appendStr(word); 						// If substring does not exist from root, start appending a new branch to it
 		}
 		return;
 	}
@@ -63,13 +63,13 @@ public class TrieNode{
 	public static void main(String[] args){
 		Scanner sc 		= new Scanner(System.in);
 		TrieNode root 	= new TrieNode();
-		TrieNode proxy 	= new TrieNode();
 
 		while(sc.hasNext()){
 			String word = sc.nextLine();
-			proxy.insertWord(word, root);
+			root.insertWord(word);
 		}
-
 		TreePrinter.printTraverse(root);
+		Storage store 	= new Storage("store/data.ser");
+		store.write(root);
 	}
 }
