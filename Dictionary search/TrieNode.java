@@ -3,6 +3,7 @@ import java.io.*;
 import java.lang.*;
 
 public class TrieNode implements Serializable{
+	// Private method specifiers.
 	private HashMap<Character, TrieNode> child_map = new HashMap<Character, TrieNode>(); 
 	private boolean word_end = false; 
 
@@ -37,6 +38,7 @@ public class TrieNode implements Serializable{
 		return;
 	}
 
+	// Public method specifiers.
 	public void insertWord(String word){
 		if(word.isEmpty()){
 			this.setWordEnd(true);
@@ -50,6 +52,18 @@ public class TrieNode implements Serializable{
 			this.appendStr(word); 						// If substring does not exist from root, start appending a new branch to it
 		}
 		return;
+	}
+
+	public TrieNode search(String init){
+		if(init.isEmpty()){
+			return this;
+		}
+		char c 			= init.charAt(0);
+		TrieNode child 	= this.getChild(c);
+		if(child != null){
+			return child.search(init.substring(1));
+		}
+		return null;
 	}
 
 	public HashMap<Character, TrieNode> getChildMap(){

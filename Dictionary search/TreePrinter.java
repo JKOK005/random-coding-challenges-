@@ -3,8 +3,7 @@ import java.util.*;
 import java.lang.*;
 
 public class TreePrinter{
-
-	private static ArrayList<String> gather(TrieNode start, String full_word, ArrayList<String> collections){
+	private static ArrayList<String> gather(TrieNode start, String full_word, ArrayList<String> collections, int limit){
 		HashMap<Character, TrieNode> child_map = start.getChildMap();
 		String copy 		= new String(full_word);
 		if(start.isEnd()){
@@ -14,20 +13,27 @@ public class TreePrinter{
 			char c 			= entry.getKey();
 			TrieNode child 	= entry.getValue();
 			copy 			+= c;
-			gather(child, copy, collections);
+
+			if(collections.size() >= limit){
+				break;
+			}
+
+			gather(child, copy, collections, limit);
 			copy 			= new String(full_word);
 		}
 		return collections;
 	}
 
-	public static void printTraverse(TrieNode start){
+	public static void printN(TrieNode start, int limit, String init){
 		ArrayList<String> collections 	= new ArrayList<String>();
 		String full_word 	= "";
-		gather(start, full_word, collections);
-		collections.stream().forEach(System.out::println);
+		gather(start, full_word, collections, limit);
+		for(String each : collections){
+			System.out.print(init.concat(each).concat(" "));
+		}
+		System.out.println(" ");
 	}
 
 	public static void main(String[] args){
-
 	}
 }
