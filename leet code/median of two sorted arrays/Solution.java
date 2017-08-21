@@ -3,6 +3,10 @@ import java.util.*;
 import java.lang.*;
 
 public class Solution{
+	private double medianOfList(int[] list, int start, int end){
+		return (double) (list[(end - start) / 2] + list[(end - start +1) / 2]) / 2;
+	}
+
 	private double findMedianSortedArrays(int[] list_A, int[] list_B){
 		int size_A 	= list_A.length;
 		int size_B 	= list_B.length;
@@ -15,19 +19,14 @@ public class Solution{
 		int high_B 			= size_B -1;
 
 		if(size_B == 0){
-			return (double) (list_A[(high_A - low_A) / 2] + list_A[(high_A - low_A +1) / 2]) / 2;
+			return medianOfList(list_A, low_A, high_A);		
 		}
 
-		int cut_left_A 		= 0;
-		int cut_right_A 	= 0;
-		int cut_left_B 		= 0;
-		int cut_right_B 	= 0;
-
 		while(low_B <= high_B){			
-			cut_left_A 		= low_A + (high_A - low_A) / 2;
-			cut_right_A 	= low_A + (high_A - low_A +1) / 2;
-		 	cut_left_B 		= low_B + (high_B - low_B) / 2;
-			cut_right_B 	= low_B + (high_B - low_B +1) / 2;
+			int cut_left_A 		= low_A + (high_A - low_A) / 2;
+			int cut_right_A 	= low_A + (high_A - low_A +1) / 2;
+		 	int cut_left_B 		= low_B + (high_B - low_B) / 2;
+			int cut_right_B 	= low_B + (high_B - low_B +1) / 2;
 
 			if(list_A[cut_left_A] <= list_B[cut_right_B] && list_B[cut_left_B] <= list_A[cut_right_A]){
 				// Cut is correct
@@ -46,22 +45,29 @@ public class Solution{
 			}
 		}
 
+		int no_L, no_R;
+
 		if(size_A == size_B){
 			if(low_B == 0){
-				return (double) (list_B[low_B] + list_A[high_A]) /2;
+				no_L 	= list_B[low_B];
+				no_R 	= list_A[high_A];
 			}else{
-				return (double) (list_B[high_B] + list_A[low_A]) /2;
+				no_L 	= list_B[high_B];
+				no_R 	= list_A[low_A];
 			}
 		}else{
-			cut_left_A 		= low_A + (high_A - low_A) / 2;
-			cut_right_A 	= low_A + (high_A - low_A +1) / 2;
+			int cut_left_A 		= low_A + (high_A - low_A) / 2;
+			int cut_right_A 	= low_A + (high_A - low_A +1) / 2;
 
 			if(low_B >= size_B){
-				return (double) (Math.max(list_A[cut_left_A], list_B[high_B]) + list_A[cut_right_A]) /2;
+				no_L 	= Math.max(list_A[cut_left_A], list_B[high_B]);
+				no_R 	= list_A[cut_right_A];
 			}else{
-				return (double) (list_A[cut_left_A] + Math.min(list_A[cut_right_A], list_B[low_B])) /2;
+				no_L 	= list_A[cut_left_A];
+				no_R 	= Math.min(list_A[cut_right_A], list_B[low_B]);
 			}
 		}
+		return (double) (no_L + no_R) /2;
 	}
 
 	public static void main(String[] args){
