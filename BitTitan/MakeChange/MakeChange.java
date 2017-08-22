@@ -3,9 +3,11 @@ import java.io.*;
 import java.lang.*;
 
 public class MakeChange{
-	private int getMaxPerm(int total, int[] coins){
-		if(coins == null) return 0;
-		// Ensure that coins are sorted first
+	public int getMaxPerm(int total, int[] coins){
+		if(coins.length == 0) return 0;
+
+		Arrays.sort(coins); // Ensure that coins are sorted first
+		if(total < coins[0]) return 0; // Total less than smallest coin means no possible sets
 
 		int pick, dont_pick;
 		int cols 		= coins.length +1;
@@ -30,13 +32,13 @@ public class MakeChange{
 				mat[i][j]		= pick + dont_pick;
 			}
 		}
-		Printer.printArr(mat);
+		// Printer.printArr(mat);
 		return mat[rows -1][cols -1];
 	}
 
 	public static void main(String[] args){
-		int[] coins 	= {1,2,3};
-		int total 		= 2;
+		int[] coins 	= {4,5};
+		int total 		= 6;
 		MakeChange c 	= new MakeChange();
 		System.out.println(c.getMaxPerm(total, coins));
 	}

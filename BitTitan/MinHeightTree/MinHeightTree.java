@@ -15,15 +15,23 @@ public class MinHeightTree{
 		return root;
 	}
 
-	private Node constructTree(int[] arr){
-		if(arr == null) return null;
+	public Node constructTree(int[] arr){
+		if(arr.length == 0) return null;
 		int end 	= arr.length -1;
 		return constructTree(arr, 0, end);
+	}
+
+	public int maxHeight(Node root){
+		if(root == null) return 0;
+		int left_height 	= 1 + maxHeight(root.getLeft());
+		int right_height 	= 1 + maxHeight(root.getRight());
+		return Math.max(left_height, right_height);
 	}
 
 	public static void main(String[] args){
 		int[] arr 	= {1,2,3,4,5};
 		MinHeightTree tree 	= new MinHeightTree();
-		tree.constructTree(arr);
+		Node root 	= tree.constructTree(arr);
+		System.out.println(tree.maxHeight(root));
 	}
 }
