@@ -1,6 +1,7 @@
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.*;
 
 public class TreeTester{
 	MinHeightTree handle;
@@ -10,19 +11,18 @@ public class TreeTester{
 		handle 	= new MinHeightTree();
 	}
 
-	public int[] traverse(Node root, int[] cmp, int n){
-		if(root == null) return null;
-		traverse(root.getLeft(), cmp, n);
-		cmp[n++] 	= root.getVal();
-		traverse(root.getRight(), cmp, n);
-		return cmp;
+	public void traverse(Node root, Vector<Integer> cmp){
+		if(root == null) return;
+		traverse(root.getLeft(), cmp);
+		cmp.add(root.getVal());
+		traverse(root.getRight(), cmp);
 	}
 
-	public boolean compareArr(int[] arr, int[] cmp){
-		if(arr.length != cmp.length) return false;
+	public boolean compareArr(int[] arr, Vector<Integer> cmp){
+		if(arr.length != cmp.size()) return false;
 		
 		for(int i=0; i < arr.length; i++){
-			if(arr[i] != cmp[i]) return false;
+			if(arr[i] != cmp.get(i)) return false;
 		}
 		return true;
 	}
@@ -42,9 +42,10 @@ public class TreeTester{
 		Node root 	= handle.constructTree(arr);
 
 		// Perform inorder traversal of the tree
-		int[] cmp 	= traverse(root, new int[no_nodes], 0);
-		// System.out.println(cmp.toString());
+		Vector<Integer> cmp 	= new Vector<Integer>(no_nodes);
+		traverse(root, cmp);
 
+		// Assert elements and order are the same
 		Assert.assertTrue(compareArr(arr, cmp));
 	}
 
