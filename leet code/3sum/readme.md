@@ -1,6 +1,7 @@
 ## 3 sum coding challenge - Leet code
-Please refere to [link](https://leetcode.com/problems/3sum/description/)
 Score: Passed 312 / 313 test cases
+
+Please refere to [link](https://leetcode.com/problems/3sum/description/)
 
 ### Approach 
 First sort the given array. Then, maintain 2 pointers A,B. A will start at index 0 and comb the 
@@ -15,11 +16,11 @@ Space	: O(N)
 
 ### Compile
 Compile the code:
-'''
+```
 javac Solutions.java
-'''
+```
 
 Then run with input:
-'''
+```
 cat input.txt | java Solutions
-'''
+```
