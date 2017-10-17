@@ -11,7 +11,14 @@ public class Solutions{
 	private void reverse(Node head, int count){
 		if(head != null){
 			reverse(head.getNext(), count +1);
+		}else if(count <= params.k_max){
+			params.stop_recur 	= true;
 		}else{
+			return;
+		}
+
+		if(params.stop_recur){
+			if(count == 1) new_root = head;
 			return;
 		}
 
@@ -59,10 +66,10 @@ public class Solutions{
 	}
 
 	public static void main(String[] args){
-		Node root 		= ListUtils.makeAscendingList(0, 20, 1);
+		Node root 		= ListUtils.makeAscendingList(1, 2, 1);
 		ListUtils.print(root);
 		Solutions sol 	= new Solutions();
-		Node new_root 	= sol.reverseKGroup(root, 3);
+		Node new_root 	= sol.reverseKGroup(root, 2);
 		ListUtils.print(new_root);
 	}
 }

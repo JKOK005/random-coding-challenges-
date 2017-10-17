@@ -6,12 +6,13 @@ public class ParamFactory{
 	public Node cur_ptr 	= null;
 	public Node head_ptr 	= null;
 	public Node nxt_ptr 	= null;
-	
+
 	public int k_max;
 	public int counter;
 	public int quotient;
 	public int remainder;
-	public boolean flag 	= false;
+	public boolean flag 		= false;
+	public boolean stop_recur 	= false;
 
 	private ParamFactory(){}
 
