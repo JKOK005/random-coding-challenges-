@@ -17,4 +17,21 @@ quotient by 1 and link the current node to the tail pointer. We then shift the t
 chain which we have to recurse. Iterate this process till quotient = 0. Thereafter, return the very last tail node of the last chain as the solution. 
 
 ### Edge cases 
-Consider the following cases
+Code takes care of the following edge cases
+	- If chain length < K node size 	-> We simply recurse up the stack without reversing
+	- If chain length = K node size -1
+
+### Compile and run
+Compile the main script and all dependencies
+```
+javac *.java -d .
+```
+
+Run the Solutions script in the package
+```
+java LeetCode.ReverseKNodes.Solutions
+```
+
+### Complexity
+Time complexity 	: O(N), N is the no of nodes in the chain
+Space Complexity 	: O(1), constant space used ... If you dont count the space for recursion 
