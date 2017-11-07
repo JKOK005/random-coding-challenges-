@@ -25,7 +25,7 @@ public class TestLongestParenthesis{
 	}
 
 	@Test
-	public void testCompleteNestedSequenceWith3Breaks(){
+	public void testCompleteNestedSequenceWithoutBreaks(){
 		String str 		= "((((()))))";
 		int maxLength 	= 10;
 		checkAnsIsCorrect(str, maxLength);
