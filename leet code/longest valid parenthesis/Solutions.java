@@ -43,7 +43,9 @@ public class Solutions{
 
 	public static void main(String[] args){
 		Solutions sol 	= new Solutions();
-		int maxLength 	= sol.longestValidParentheses(")(())(()(())");
+		Scanner sc 		= new Scanner(System.in);
+		String inputStr	= sc.nextLine();
+		int maxLength 	= sol.longestValidParentheses(inputStr);
 		System.out.println(maxLength);
 	}
 }
