@@ -42,4 +42,5 @@ java -cp ".;./junit-4.10.jar" org.junit.runner.JUnitCore TestLongestParenthesis
 
 ### Complexity
 Time complexity 	: O(N), N is the length of input string
+
 Space Complexity 	: O(N)
