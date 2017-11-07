@@ -24,7 +24,7 @@ javac Solutions.java -d .
 
 Run the Solutions script in the package
 ``` java
-java Solutions
+cat input.txt | java Solutions
 ```
 
 ### Testing
