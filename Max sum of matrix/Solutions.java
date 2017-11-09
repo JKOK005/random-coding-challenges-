@@ -71,7 +71,7 @@ public class Solutions{
 	}
 
 	public static void main(String[] args){
-		Scanner sc 	= new Scanner(System.in);
+		Scanner sc = new Scanner(System.in);
 		ArrayList<ArrayList<Integer>> matrix = new ArrayList<ArrayList<Integer>>();
 		while(sc.hasNextLine()){
 			String[] line 			= sc.nextLine().split("\\s+");
