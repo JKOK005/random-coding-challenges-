@@ -43,7 +43,7 @@ public class LRUCache<K, V>{
 	}
 
 	public boolean isFull(){
-		if(this.keyValueMap.size() > this.capacity) return true;
+		if(this.keyValueMap.size() >= this.capacity) return true;
 		return false;
 	}
 
