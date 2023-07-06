@@ -71,7 +71,10 @@ class BuyOrderBookTree(OrderBookTree):
 	def consume_order(self, new_order: SellOrders):
 		all_fulfilled_orders = []
 
-		while self.root_ptr is not None and new_order.get_qty() > 0:
+		while 	self.root_ptr is not None and \
+				new_order.get_qty() > 0 and \
+				new_order.get_price() <= self.front_ptr.get_price():
+			
 			all_fulfilled_orders += self.front_ptr.consume_order(impending_order = new_order)
 
 			if self.front_ptr.is_empty():
@@ -118,7 +121,10 @@ class SellOrderBookTree(OrderBookTree):
 	def consume_order(self, new_order: BuyOrders):
 		all_fulfilled_orders = []
 
-		while self.root_ptr is not None and new_order.get_qty() > 0:
+		while 	self.root_ptr is not None and \
+				new_order.get_qty() > 0 and \
+				new_order.get_price() >= self.front_ptr.get_price():
+
 			all_fulfilled_orders += self.front_ptr.consume_order(impending_order = new_order)
 
 			if self.front_ptr.is_empty():
