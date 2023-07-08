@@ -1,205 +1,70 @@
-import copy
 from Orders import *
-from typing import Union
-from typing_extensions import Self
+from OrderBook import *	
+from TreeUtils import *
 
-class BookNode(object):
-	order: Orders
-	prev_node: Self
-	next_node: Self
-
-	def __init__(self, order: Orders):
-		self.order 		= order
-		self.prev_node 	= None 
-		self.next_node 	= None
-		return
-
-	def get_order(self):
-		return self.order
-
-	def get_prev_node(self):
-		return self.prev_node
-
-	def set_prev_node(self, node: Self):
-		self.prev_node = node 
-		return 
-
-	def get_next_node(self):
-		return self.next_node
-
-	def set_next_node(self, node: Self):
-		self.next_node = node 
-		return
-
-class BookSuperNode(object):
-	price: int 
-	volume: int
-	prev_node: Self
-	next_node: Self
-	first_child: BookNode
-	last_child: BookNode
-
-	def __init__(self, price: int):
-		self.price 			= price
-		self.volume 		= 0
-		self.prev_node 		= None
-		self.next_node 		= None
-		self.first_child 	= None
-		self.last_child 	= None
-		return 
-
-	def get_price(self):
-		return self.price
-
-	def get_volume(self):
-		return self.volume
-
-	def set_volume(self, volume: int):
-		self.volume = volume
-		return
-
-	def get_prev_node(self):
-		return self.prev_node
-
-	def set_prev_node(self, node: Self):
-		self.prev_node = prev_node
-		return
-
-	def get_next_node(self):
-		return self.next_node
-
-	def set_next_node(self, node: Self):
-		self.next_node = next_node
-		return
-
-	def get_first_child(self):
-		return self.first_child
-
-	def set_first_child(self, child: BookNode):
-		self.first_child = child
-		return
-
-	def get_last_child(self):
-		return self.last_child
-
-	def set_last_child(self, child: BookNode):
-		self.last_child = child
-		return
-
-	def is_empty(self):
-		return self.first_child is None
-
-	def add(self, order: Orders):
-		new_order_book_node = BookNode(order = order)
-
-		if self.get_first_child() is None:
-			self.set_first_child(child = new_order_book_node)
-
-		if self.get_last_child() is None:
-			self.set_last_child(child = new_order_book_node)
-
-		else:
-			last_child = self.get_last_child()
-			last_child.set_next_node(node = new_order_book_node)
-			new_order_book_node.set_parent(node = last_child)
-
-		self.volume += order.get_qty()
-		return
-
-	def consume_first(self, order: Orders):
-		"""
-		Only consumes the first available BookNode. 
-		Any quantity consumed is directly debited from both the first order and the new order
-
-		Returns original order_id class with the amount consumed 
-		"""
-		first_child 	= self.get_first_child()
-		available_qty 	= first_child.get_order().get_qty()
-		order_qty  		= order.get_qty()
-		consumed_qty 	= min(available_qty, order_qty)
-
-		consumed_order 	= copy.deepcopy(first_child.get_order())
-		consumed_order.set_qty(new_qty = consumed_qty)
-
-		first_child.get_order().set_qty(new_qty = available_qty - consumed_qty)
-		order.set_qty(new_qty = order_qty - consumed_qty)
-		self.volume 	-= consumed_qty
-
-		if first_child.get_order().get_qty() == 0:
-			self.set_first_child(child = first_child.next_node())
-
-		return consumed_order
-
-class OrderBook(object):
-	book_head: BookSuperNode
+class SimulatedOrderBook(object):
+	buy_book: 	BuyOrderBook
+	sell_book: 	SellOrderBook
 
 	def __init__(self):
-		self.order_book_head = None 
-		return
+		self.buy_book 	= BuyOrderBook()
+		self.sell_book 	= SellOrderBook()
+		return 
 
-	def _check_advance(self, cur_head_price: int, order_price: int):
-		pass
+	def handle_orders(self, order: Orders):
+		if type(order) == MarketSellOrders:
+			filfilled_orders = self.buy_book.consume(order = order)
+		
+		elif type(order) == LimitSellOrders:
+			filfilled_orders = self.buy_book.consume(order = order)
 
-	def get_book_head(self):
-		return self.book_head
+			if order.get_qty() > 0:
+				self.sell_book.add(order = order)
 
-	def set_book_head(self, node: BookSuperNode):
-		self.book_head = node
-		return
-
-	def add(self, order: Orders):
-		order_price 		= order.get_price()
-		cur_head  			= self.get_book_head()
-		new_book_super_node = BookSuperNode(price = order_price)
-		new_book_super_node.add(order = order)
-
-		if cur_head is None:
-			# No limit orders have been placed
-			self.set_book_head(node = new_book_super_node)
+		elif type(order) == MarketBuyOrders:
+			filfilled_orders = self.sell_book.consume(order = order)
 
 		else:
-			while self._check_advance(cur_head_price = cur_head.get_price(), order_price = order_price) and cur_head is not None:
-				prev_head 	= cur_head
-				cur_head 	= cur_head.get_next_node()
+			filfilled_orders = self.sell_book.consume(order = order)
 
-			if cur_head is None:
-				prev_head.set_next_node(node = new_book_super_node)
-				new_book_super_node.set_prev_node(node = prev_head)
+			if order.get_qty() > 0:
+				self.buy_book.add(order = order)
 
-			else:
-				if cur_head.get_price() == order_price:
-					# Add to current head 
-					cur_head.add(order = order)
+		return filfilled_orders
 
-				else:
-					if cur_head == self.get_book_head():
-						self.set_book_head(node = new_book_super_node)
-						new_book_super_node.set_next_node(node = cur_head)
-						cur_head.set_prev_node(node = new_book_super_node)
+if __name__ == "__main__":
+	simulated_order_book = SimulatedOrderBook()
 
-					else:
-						new_book_super_node.set_next_node(node = cur_head)
-						new_book_super_node.set_prev_node(node = prev_head)
-						prev_head.set_next_node(node = new_book_super_node)
-		return
+	# Test insert buy limit orders
+	for i in range(10):
+		buy_order = LimitBuyOrders(order_id = f"{i}", price = i, qty = 10)
+		simulated_order_book.handle_orders(order = buy_order)
 
-	def consume(self, order: Orders):
-		all_consumed_orders = []
+	assert(TreeUtils.count_super_nodes(root = simulated_order_book.buy_book.get_book_head()) == 10)
 
-		while order.get_qty() > 0 and self.get_book_head() is not None:
-			book_head 		= self.get_book_head()
-			consumed_order 	= book_head.consume_first(order = order)
-			all_consumed_orders.append(consumed_order)
+	# Test sell limit partially taking out buy orders
+	# Buys are from prices 0 - 9 @ 10 qty each
+	# After order, we should take out buy limits from 5 - 9 and have 50 units of sell remaining
+	sell_order 			= LimitSellOrders(order_id = f"take out 5 - 9", price = 5, qty = 100)
+	fulfilled_orders 	= simulated_order_book.handle_orders(order = sell_order)
+	print(fulfilled_orders)
+	assert(len(fulfilled_orders) == 5)
+	assert(TreeUtils.count_nodes(root = simulated_order_book.buy_book.get_book_head()) == 5)
+	assert(TreeUtils.count_nodes(root = simulated_order_book.sell_book.get_book_head()) == 1)
 
-			if book_head.is_empty():
-				self.set_book_head(node = book_head.get_next_node())
-				book_head.set_prev_node(node = None)
-		return all_consumed_orders
+	simulated_order_book = SimulatedOrderBook()
 
-class BuyOrderBook(object):
-	def _check_advance(self, cur_head_price: int, order_price: int):
-		return cur_head_price > order_price
+	# Test insert sell limit orders
+	for i in range(10):
+		sell_order = LimitSellOrders(order_id = f"{i}", price = i, qty = 10)
+		simulated_order_book.handle_orders(order = sell_order)
+	assert(TreeUtils.count_nodes(root = simulated_order_book.sell_book.get_book_head()) == 10)
 
-class SellOrderBook(object):
-	def _check_advance(self, cur_head_price: int, order_price: int):
-		return cur_head_price < order_price
+	# Test buy limit partially taking out sell orders
+	# Sells are from prices 0 - 9 @ 10 qty each
+	# After order, we should take out sell limits from 0 - 5 and have 40 units of buy remaining
+	buy_order 			= LimitBuyOrders(order_id = f"take out 5 - 9", price = 5, qty = 100)
+	fulfilled_orders 	= simulated_order_book.handle_orders(order = buy_order)
+	assert(len(fulfilled_orders) == 6)
+	assert(TreeUtils.count_nodes(root = simulated_order_book.sell_book.get_book_head()) == 4)
+	assert(TreeUtils.count_nodes(root = simulated_order_book.buy_book.get_book_head()) == 1)
