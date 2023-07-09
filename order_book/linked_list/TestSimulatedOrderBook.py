@@ -10,7 +10,7 @@ if __name__ == "__main__":
 	# Test insert buy limit orders
 	for i in range(10):
 		price 	= 10 + i
-		qty 	= 10
+		qty 	= 20
 		cur_counter = next(counter)
 
 		buy_order = LimitBuyOrders(order_id = f"{i}", price = price, qty = qty)
