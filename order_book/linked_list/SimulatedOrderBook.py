@@ -11,6 +11,15 @@ class SimulatedOrderBook(object):
 		self.sell_book 	= SellOrderBook()
 		return 
 
+	def cancel(self, order_id: str):
+		if self.buy_book.cache.get(order_id = order_id):
+			self.buy_book.cancel(order_id = order_id)
+
+		if self.sell_book.cache.get(order_id = order_id):
+			self.sell_book.cancel(order_id = order_id)
+
+		return
+
 	def handle_orders(self, order: Orders):
 		if type(order) == MarketSellOrders:
 			filfilled_orders = self.buy_book.consume(order = order)

@@ -94,6 +94,7 @@ class BookSuperNode(object):
 
 		if self.get_first_child() is None:
 			self.set_first_child(child = new_order_book_node)
+			new_order_book_node.set_prev_node(node = self)
 
 		if self.get_last_child() is None:
 			self.set_last_child(child = new_order_book_node)
@@ -104,7 +105,7 @@ class BookSuperNode(object):
 			new_order_book_node.set_parent(node = last_child)
 
 		self.volume += order.get_qty()
-		return
+		return new_order_book_node
 
 	def consume_first(self, order: Orders):
 		"""
@@ -130,11 +131,15 @@ class BookSuperNode(object):
 
 		return consumed_order
 
+from OrderCache import OrderCache
+
 class OrderBook(object):
 	book_head: BookSuperNode
+	cache: OrderCache
 
 	def __init__(self):
-		self.book_head = None 
+		self.book_head 	= None 
+		self.cache  	= OrderCache()
 		return
 
 	def _insert_rule(self, cur_head_price: int, order_price: int):
@@ -154,7 +159,7 @@ class OrderBook(object):
 		order_price 		= order.get_price()
 		cur_head  			= self.get_book_head()
 		new_book_super_node = BookSuperNode(price = order_price)
-		new_book_super_node.add(order = order)
+		node_ref 			= new_book_super_node.add(order = order)
 
 		if cur_head is None:
 			# No limit orders have been placed
@@ -172,7 +177,7 @@ class OrderBook(object):
 
 			else:
 				if cur_head.get_price() == order_price:
-					cur_head.add(order = order)
+					node_ref = cur_head.add(order = order)
 
 				else:
 					if cur_head == self.get_book_head():
@@ -184,6 +189,8 @@ class OrderBook(object):
 						new_book_super_node.set_next_node(node = cur_head)
 						new_book_super_node.set_prev_node(node = prev_head)
 						prev_head.set_next_node(node = new_book_super_node)
+
+		self.cache.save(order_id = order.get_order_id(), node_ref = node_ref)
 		return
 
 	def consume(self, order: Orders):
@@ -200,6 +207,35 @@ class OrderBook(object):
 				self.set_book_head(node = book_head.get_next_node())
 				book_head.set_prev_node(node = None)
 		return all_consumed_orders
+
+	def cancel(self, order_id: str):
+		node_ref 	= self.cache.get(order_id = order_id)
+		parent 		= node_ref.get_prev_node()
+
+		if type(parent) == BookSuperNode:
+			parent.set_first_child(child = node_ref.get_next_node())
+
+			if parent.is_empty():
+				if parent.get_prev_node() is None and parent.get_next_node() is None:
+					self.book_head = None 
+
+				elif parent.get_prev_node() is None and parent.get_next_node() is not None:
+					self.book_head = parent.get_next_node()
+					parent.get_next_node().set_prev_node(node = None)
+
+				elif parent.get_prev_node() is not None and parent.get_next_node() is None:
+					parent.get_prev_node().set_next_node(node = parent.get_next_node())
+
+				else:
+					parent.get_prev_node().set_next_node(node = parent.get_next_node())
+					parent.get_next_node().set_prev_node(node = parent.get_prev_node())
+
+		else:
+			parent.set_next_node(node = node_ref.get_next_node()) 
+			
+		if node_ref.get_next_node() is not None:
+			node_ref.get_next_node().set_prev_node(node = parent)
+		return
 
 class BuyOrderBook(OrderBook):
 	def _insert_rule(self, cur_head_price: int, order_price: int):

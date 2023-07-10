@@ -1,4 +1,5 @@
 import itertools
+import time
 from Orders import *
 from SimulatedOrderBook import *
 from TreeUtils import TreeUtils
@@ -8,28 +9,28 @@ if __name__ == "__main__":
 	simulated_order_book = SimulatedOrderBook()
 
 	# Test insert buy limit orders
-	for i in range(10):
-		price 	= 10 + i
+	for i in range(20, 5, -1):
+		price 	= i
 		qty 	= 20
 		cur_counter = next(counter)
 
-		buy_order = LimitBuyOrders(order_id = f"{i}", price = price, qty = qty)
+		buy_order = LimitBuyOrders(order_id = f"limit-buy-{price}", price = price, qty = qty)
 		simulated_order_book.handle_orders(order = buy_order)
 
 		TreeUtils.visualize(
 			root = simulated_order_book.buy_book.get_book_head(),
 			file_name = f"{cur_counter}-ADD-LIMIT-{price}-{qty}"
 		)
+		time.sleep(1)
 
-	for i in range(10):
-		price 	= i
-		qty 	= 10
-		cur_counter = next(counter)
-
-		buy_order = LimitBuyOrders(order_id = f"{i}", price = price, qty = qty)
-		simulated_order_book.handle_orders(order = buy_order)
+	for i in range(19, 5, -1):
+		price = i
+		simulated_order_book.cancel(order_id = f"limit-buy-{price}")
 
 		TreeUtils.visualize(
 			root = simulated_order_book.buy_book.get_book_head(),
 			file_name = f"{cur_counter}-ADD-LIMIT-{price}-{qty}"
 		)
+		time.sleep(1)
+
+	
