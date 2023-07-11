@@ -1,3 +1,7 @@
+"""
+Solution accepted at https://leetcode.com/problems/largest-rectangle-in-histogram/submissions/991457933/
+"""
+
 class Solution:
     def smallest_num_to_left(self, heights: [int]) -> [int]:
         stack   = []
