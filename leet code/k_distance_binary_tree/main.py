@@ -35,7 +35,6 @@ class Solution:
             # Explore down and up the tree
             
             _explored = self.explored[::-1][: k+1]
-            print(list(map(lambda x: x.val, _explored)))
 
             for indx, each_explored in enumerate(_explored):
                 if indx == k and each_explored is not None:

@@ -9,7 +9,7 @@ if __name__ == "__main__":
 	simulated_order_book = SimulatedOrderBook()
 
 	# Test insert buy limit orders
-	for i in range(20, 5, -1):
+	for i in range(10, 1, -1):
 		price 	= i
 		qty 	= 20
 		cur_counter = next(counter)
@@ -23,13 +23,14 @@ if __name__ == "__main__":
 		)
 		time.sleep(1)
 
-	for i in range(19, 5, -1):
+	for i in range(9, 1, -1):
 		price = i
 		simulated_order_book.cancel(order_id = f"limit-buy-{price}")
+		cur_counter = next(counter)
 
 		TreeUtils.visualize(
 			root = simulated_order_book.buy_book.get_book_head(),
-			file_name = f"{cur_counter}-ADD-LIMIT-{price}-{qty}"
+			file_name = f"{cur_counter}-CANCEL-LIMIT-{price}-{qty}"
 		)
 		time.sleep(1)
 

@@ -42,5 +42,5 @@ class TreeUtils(object):
 				add_super_nodes(node.get_next_node())
 		
 		add_super_nodes(root)
-		dot.render(directory = 'runs', view = True)
-		# dot.render(filename = file_name, directory = 'runs', view = False, format='jpg')
+		# dot.render(directory = 'runs', view = True)
+		dot.render(filename = file_name, directory = 'runs', view = False, format='jpg')
